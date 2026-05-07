@@ -1,0 +1,69 @@
+Wave Function Collapse (WFC) generates based on some given tile sets and constraints for the tile combination a map, which can be used in games such as Catan. When increasing the grid size to a very large size, the amount of grid combinations becomes exponentially large: \[
+\text{DataSize} = |\mathcal{T}|^{N}
+\]
+where $\mathcal{T}$ denotes the set of available tile types, $|\mathcal{T}|$ is the cardinality of this set (i.e., the number of distinct tile types), and $N$ represents the total number of tiles in the grid. Consequently, $\text{DataSize}$ corresponds to the total number of possible tile configurations. With the help of Grovers algorithm, the search for a valid grid configuration can be sped up quadratically. 
+
+\paragraph{Classical Approach:}
+
+The classical baseline is implemented using a constraint-based Wave Function Collapse (WFC) algorithm. The grid consists of tiles that can take one of four possible states: Water, Beach, Grass, or Forest. The constraints to be satisfied is that each of those tile types can only border themselves and their direct neighbours in the previously listed order, so Water can only border itself and Beach, Beach can border itself, Water and Grass, et cetera. Each grid position is initialized with all tile options simultaneously, representing maximum uncertainty.
+
+\vspace{1em}
+\noindent
+The algorithm proceeds iteratively by alternating between a collapse step and constraint propagation. During collapse, a grid position that still has multiple valid tile options is selected at random, and one option is chosen uniformly at random. This reduces the local uncertainty and introduces stochasticity into the generation process.
+
+\vspace{1em}
+\noindent
+After collapsing a tile, adjacency constraints are enforced by propagating restrictions to neighboring grid positions. Tile options that are incompatible with neighboring states are removed. This propagation is repeated until no further changes occur, ensuring consistency across the grid.
+
+\vspace{1em}
+\noindent
+These two steps are repeated until every grid position has exactly one remaining tile option, yielding a fully collapsed configuration that satisfies all local constraints. The resulting tile map serves as a classical reference for comparison with the quantum-based approach.
+
+
+\paragraph{Quantum formulation:}
+
+For the quantum approach, the same tile types are used as in the classical case (Water, Beach, Grass, and Forest). Since four tile types are required, each tile is encoded using two qubits. Consequently, the grid data alone requires
+\[
+2NM,
+\]
+where $N$ denotes the number of rows and $M$ the number of columns. Due to this large number of data qubits, constructing an efficient oracle requires minimizing the number of ancilla qubits while still correctly checking all adjacency constraints.
+
+\vspace{1em}
+\noindent
+The oracle is constructed by evaluating local adjacency constraints between neighboring tiles and marking configurations that satisfy all constraints. Each constraint check compares the qubit encoding of two neighboring tiles and flips an ancilla qubit if an invalid combination is detected. These checks are implemented using multi-controlled X (MCX) gates acting on the data qubits that encode the tile values.
+
+\vspace{1em}
+\noindent
+To limit the total number of ancilla qubits, adjacency checks are evaluated in batches. Within each batch, multiple constraint checks are performed in parallel, and their results are aggregated into a reserved ancilla qubit that represents whether all constraints in that batch are satisfied. The temporary ancilla qubits are then uncomputed and reused for subsequent batches. After all constraints have been evaluated, a multi-controlled $Z$ gate is applied, conditioned on the constraint ancillae, to apply a phase flip to valid configurations. The constraint circuit is then inverted to restore all ancilla qubits to their initial states.
+
+\vspace{1em}
+\noindent
+With this method for the \(3\times 3\) WFC instance are:
+\begin{itemize}
+  \item Data qubits: 18 (2 per tile).
+  \item Ancilla qubits: 8 (after batching and reuse strategy).
+  \item Total qubits: 26.
+  \item Grover iterations: 9 (estimated by sampling the initial probability of valid configurations and using it to approximate the optimal Grover rotation angle).
+\end{itemize}
+
+\vspace{1em}
+\noindent
+To simplify the implementation of the constraints and the resulting oracle, the tiles in the grid are encoded in two different ways: Either Water, Beach, Grass and Forest tiles are encoded using the bitstrings '00', '01', '10', and '11' respectively, or in reverse order, depending on the location of the tile within the grid. We called these encodings A and B, which are used in the grid in a checkerboard pattern, such that tiles encoded using A only border tiles encoded using B. This simplifies the circuit needed to check a single constraint between two tiles to
+
+\vspace{1em}
+\begin{quantikz}
+    \qw & \ctrl{3} & \gate{X} & \ctrl{3} & \gate{X} & \qw \\
+    \qw & \ctrl{2} & \gate{X} & \ctrl{2} & \gate{X} & \qw \\
+    \qw & \ctrl{1} & \gate{X} & \ctrl{1} & \gate{X} & \qw \\
+    \qw & \targ{}  & \qw      & \targ{}  & \gate{X} & \qw \\
+\end{quantikz}
+
+\noindent
+Here, the top two qubits are the two qubits of the tile, the third qubit is the first qubit of one of the tiles neighbors and the last qubit is the ancilla in which the result of the constraint is stored. This circuit has been designed specifically for this ruleset, and needs to be checked both ways: if tile A with qubits A1 and A2 borders tile B with qubits B1 and B2, this circuit needs to be used once on A1, A2 and B1, and once on A1, B1 and B2, together producing two results stored in ancillae. This process then needs to be run for every two neighboring tiles, after which the results stored in the ancilla qubits are combined into a multi-controlled Z-gate. As mentioned previously, in our implementation the results were first intermediately combined to save on ancilla qubits, allowing for the simulation of larger grid sizes.
+
+\vspace{1em}
+\noindent
+In summary, the WFC problem is formulated as a Boolean search over tile configurations, with local adjacency constraints encoded into a reversible oracle using batched constraint evaluation and ancilla reuse. Grover’s algorithm is then applied to amplify valid configurations.
+
+
+

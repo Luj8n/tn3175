@@ -1,0 +1,34 @@
+\paragraph{Classical approach:}
+The classical implementation is both accessible and efficient because the game structure of Lights Out lends itself to being translated into a linear algebra problem, by defining A as an $n^2 \times n^2$ matrix, where A[i,j] is 1 if pressing button j toggles light i and 0 otherwise, and $\vec{b}$ as a vector of length $n^2$, corresponding to the initial game state, where 1 means a light is on and 0 that it is off. Solving the game is then equivalent to solving $A\vec{x}=\vec{b}$, where x is a vector of length $n^2$, indicating the lights that need to be toggled as 1 and the rest as 0. This can be done using Gaussian elimination in polynomial time (O($n^6$)).
+
+\paragraph{Quantum formulation:}
+Each board cell is encoded as a single data qubit since Lights Out is a binary puzzle (0 = off, 1 = on). For an $n\times n$ board this requires $n^2$ data qubits. The oracle is constructed to recognize bitstrings that correspond to solutions of the linear system described above.
+
+\vspace{1em}
+\noindent For each cell a temporary qubit is used to accumulate parity checks of the cell and its neighbors (right, down, left, up). These temporary parity qubits are computed with CNOTs from the relevant data qubits, then combined via a multi-controlled X (MCX) gate to flip the output qubit for valid configurations. After marking, the parity computation is uncomputed to restore ancillae to the initial state, making the oracle fully reversible.
+
+\vspace{1em}
+\noindent A custom MCX synthesis\cite{IBMQuantumDocumentationSynthesis, Khattar_2025} is used which increases the number of ancilla qubits compared to the simplest decompositions, but it reduces the overall error rate. The oracle circuit therefore contains three logical stages: (1) constraint evaluation (parity computation), (2) phase-marking (multi-controlled phase flip), and (3) uncomputation of temporary qubits.
+
+\vspace{1em}
+\noindent The algorithm begins by preparing the data qubits in an equal superposition with Hadamards. The output qubit is prepared in the $| - \rangle$ state. Grover iterations (oracle + diffuser) are then applied. The code computes an estimate for the number of Grover iterations as
+\[
+k \approx \frac{\pi}{4}\sqrt{\frac{2^{n^2}}{M}},
+\]
+where $M$ is the number of solutions (we use known sequence values\cite{oeis_A075462} for solution counts) and $n$ size of the game. For the $2\times 2$ test instance ($n = 2$) used in our experiments the implementation calculates that $k = 3$.
+
+\vspace{1em}
+\noindent Additionally, to reduce noise dynamical decoupling\cite{IBMQuantumDocumentationDynamicalDecoupling} was applied for the IBM hardware runs. It is intended to reduce decoherence and in practice is recommended when running long circuits.
+
+\vspace{1em}
+\noindent Resource summary for the $2\times 2$ runs reported here:
+\begin{itemize}
+	\item Data qubits: $n^2 = 4$
+	\item Temporary (parity) qubits: $n^2 = 4$
+	\item Ancilla qubits for MCX synthesis: $n^2 - 2 = 2$
+	\item Output/phase qubit: $1$
+	\item Total qubits: $3n^2 - 1 = 11$
+	\item Logical gate count (untranspiled): 156
+	\item Circuit depth (untranspiled): 63
+	\item Estimated Grover iterations: 3
+\end{itemize}

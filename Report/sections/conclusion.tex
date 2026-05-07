@@ -1,0 +1,7 @@
+This project evaluated whether student-accessible quantum computing platforms are currently well enough to implement Grover’s algorithm meaningfully on game-like problems, and at what scale this is feasible. The results show that Grover is currently most useful as a proof-of-concept: small instances can demonstrate correct behavior, but scalability is limited by circuit depth and noise.
+\\
+\\
+For Sudoku, Grover works well for a $2\times 2$ instance on real hardware, but the partially filled $4\times 4$ case remains practical only in simulation and is outperformed by classical structure-aware solvers. For Lights Out, correct amplification is observed in simulation, yet hardware performance degrades strongly due to transpilation overhead and two-qubit gate noise. For WFC, the $3\times 3$ case achieves high success probability in simulation (99.6\%), while hardware results are near-uniform with only $\approx 1.4\%$ valid outcomes, reflecting circuit depths far beyond coherence limits.
+\\
+\\
+Overall, Grover helps when the oracle is compact and the instance is small enough that depth stays within hardware limits. It does not yet provide a practical advantage over classical methods for these structured problems on current student-accessible hardware. Future work should focus on reducing oracle depth, exploring hybrid classical--quantum pipelines (e.g., classical pruning followed by Grover), and repeating these experiments as hardware improves, especially with better connectivity and lower two-qubit error rates.

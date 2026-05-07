@@ -1,0 +1,162 @@
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+% --------------------------------------------------
+% Packages
+% --------------------------------------------------
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{braket}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{mathptmx} % Times-like font (Nature style)
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{quantikz}
+% --------------------------------------------------
+% Bibliography (ONLY shows cited works)
+% --------------------------------------------------
+\usepackage[
+backend=biber,
+style=numeric,
+sorting=none
+]{biblatex}
+\addbibresource{references.bib}
+
+% --------------------------------------------------
+% Colors
+% --------------------------------------------------
+\definecolor{tudblue}{RGB}{0,82,159}
+
+% --------------------------------------------------
+% Header & Footer
+% --------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\cfoot{\thepage}
+
+% --------------------------------------------------
+% Section style (no numbering)
+% --------------------------------------------------
+\setcounter{secnumdepth}{0}
+\titleformat{\section}{\large\bfseries}{ }{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{ }{0em}{}
+
+% --------------------------------------------------
+% TU Delft Header
+% --------------------------------------------------
+% \newcommand{\tudelftheader}{
+% \noindent
+% {\Huge\bfseries\color{tudblue} TU Delft}\\[-0.4em]
+% \rule{\textwidth}{0.5pt}
+% \vspace{1.5em}
+% }
+\newcommand{\tudelftheader}{
+    \noindent
+    \begin{center}
+        \includegraphics[width=7cm]{logo_rgb@16x.png} 
+    \end{center}
+}
+
+% --------------------------------------------------
+% Title
+% --------------------------------------------------
+\title{
+\bfseries
+Quadratic in Theory, Flat in Hardware: Evaluating Grover Search on Small Games Using Qiskit and IBM Quantum
+}
+
+% --------------------------------------------------
+% Authors
+% --------------------------------------------------
+\author{
+H. Botezatu,
+R. Kapoor,
+L. Milieška,
+F. van Onna,
+D. Lenta,
+R. van Unen\\[0.6em]
+\small
+TU Delft, Quantum Minor Programme, Delft, The Netherlands
+}
+
+\date{}
+
+% --------------------------------------------------
+% Document
+% --------------------------------------------------
+\begin{document}
+
+\twocolumn[
+\tudelftheader
+\maketitle
+
+\vspace{-1em}
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\vspace{1.5em}
+]
+
+% --------------------------------------------------
+% Main sections
+% --------------------------------------------------
+\newpage
+\section{Introduction}
+\input{sections/introduction}
+
+
+\section{Methodology}
+\input{sections/methodology}
+
+
+\subsection{Sudoku}
+\input{sections/sudoku}
+
+\subsection{Lights Out}
+\input{sections/LightsOut}
+
+\subsection{WFC}
+\input{sections/wfc}
+
+
+\section{Results}
+\input{sections/results}
+
+
+\section{Discussion}
+\input{sections/discussion}
+
+
+\section{Conclusion}
+\input{sections/conclusion}
+
+% --------------------------------------------------
+% Author Contributions
+% --------------------------------------------------
+\newpage
+\section{Author Contributions}
+\input{sections/contributions}
+
+% --------------------------------------------------
+% Bibliography (ONLY if cited)
+% --------------------------------------------------
+\newpage
+\printbibliography
+
+% --------------------------------------------------
+% Appendices
+% --------------------------------------------------
+\newpage
+\appendix
+\onecolumn
+\section{Appendix A}
+\input{appendices/appendixA}
+\section{Appendix B}
+\input{appendices/appendixB}
+\end{document}

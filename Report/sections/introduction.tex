@@ -1,0 +1,26 @@
+
+Quantum computing offers new approaches to computational problems that are difficult to solve efficiently using classical computers. One of the most well-known quantum algorithms is \textbf{Grover's search algorithm}, which provides a quadratic speed-up for searching an unsorted database \cite{Grover1996}. Given a search space of size \textbf{$N$}, a classical algorithm requires $O(N)$ checks in the worst case, whereas Grover's algorithm can find a marked solution using only $O(\sqrt{N})$. This quadratic improvement is proven to be optimal for unstructured search problems.
+
+\vspace{1em}
+\noindent
+Despite this theoretical advantage, a quantum speed-up does not automatically translate into practical usefulness. If the size of the search space grows exponentially with the input size, a square-root reduction still results in exponential complexity. Consequently, for many NP-hard problems, Grover’s algorithm merely reduces the exponent by a factor of two. This raises important questions regarding the feasibility of quantum approaches on near-term quantum hardware, especially for small problem instances and platforms that are accessible to students and researchers, such as cloud-based quantum computers and simulators.
+
+\vspace{1em}
+\noindent
+For this reason, it is essential to study concrete and well-defined problems in order to assess both the potential and the limitations of Grover’s algorithm in practice. In particular, games and puzzle-like problems form an attractive testbed for quantum algorithms: they are intuitive, naturally expressed as search problems, and allow for direct comparison with efficient classical solutions. The main objective of this project is to investigate whether currently available, student-accessible quantum computing technology is sufficiently mature to meaningfully implement Grover’s algorithm for such problems, and to determine at what scale and under which constraints this is possible.
+
+\vspace{1em}
+\noindent
+To this end, Grover’s algorithm is applied to three representative game-related problems, and the quantum approach is compared to classical solution methods:
+
+\begin{itemize}
+\item \textbf{Lights Out:} Lights Out is a puzzle played on a grid (traditionally $5 \times 5$, though other sizes are also considered) in which pressing a cell toggles the state of that cell and its orthogonally adjacent neighbors. Starting from a random configuration, the objective is to turn off all lights. While this problem can be solved efficiently using classical linear algebra techniques, it can also be formulated as a search problem. The use of Grover’s algorithm is investigated to determine whether any advantage arises compared to the classical solution.
+
+\item \textbf{Sudoku (small instances):} Small Sudoku instances that are compatible with current quantum hardware are studied. A $2 \times 2$ Sudoku is implemented using Grover’s algorithm and executed on real IBM quantum hardware, while a $4 \times 4$ Sudoku is implemented and evaluated using Qiskit simulations. The quantum approach is compared against a classical solver, and differences in runtime complexity and resource requirements are analyzed.
+
+\item \textbf{Procedural Map Generation:} Wave Function Collapse (WFC) is a classical algorithm used for generating tile-based maps under local adjacency constraints, commonly applied in game development. A quantum variant of this approach is implemented by encoding the adjacency constraints into a quantum oracle and applying Grover’s algorithm to search for valid tile configurations. The quantum method is compared to its classical counterpart, which typically scales with the size of the generated map.
+\end{itemize}
+
+\vspace{1em}
+\noindent
+For each problem, both the theoretical runtime complexity and the practical performance are analyzed. Theoretical analysis is based on the size of the search space and the expected behavior of Grover’s algorithm, while practical performance is evaluated using simulation results and executions on real quantum hardware. Additional practical considerations, such as the required number of qubits, circuit depth, number of ancilla qubits, and overall execution time, are also taken into account. Together, these analyses provide insight into the current capabilities and limitations of applying Grover’s algorithm to game-like problems using student-accessible quantum computing platforms. The code used during the project can be found in Appendix B.
